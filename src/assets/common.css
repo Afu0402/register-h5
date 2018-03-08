@@ -1,0 +1,15 @@
+html,body {
+    height: 100%;
+}
+html,body,div,ul,li,span,h1,h2,h3,h4,button,input,p {
+    padding: 0;
+    margin: 0;
+}
+button, input{
+    border: none;
+    outline: none;
+    background: none;
+}
+li {
+    list-style: none;
+}
