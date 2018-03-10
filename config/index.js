@@ -19,7 +19,15 @@ module.exports = {
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
-
+    proxyTable: {
+      '/': {
+          target: 'http://dev-jsl-apply-api.thedeer.cn:88',
+          changeOrigin: true,
+          pathRewrite: {
+              '^/': ''
+          }
+        }
+    },
     
     /**
      * Source Maps

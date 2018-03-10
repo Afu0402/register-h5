@@ -40,7 +40,7 @@ export default new Router({
     {
       path: '/result',
       name: 'result',
-      component: () => import ('@/pages/result.vue'),
+      component: () => import ('@/pages/result/result.vue'),
       meta: {
         title: '小鹿活动'
       }

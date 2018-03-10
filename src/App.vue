@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="login__title">小鹿活动</div>
+    <!-- <div class="login__title">小鹿活动</div> -->
     <router-view/>
   </div>
 </template>
