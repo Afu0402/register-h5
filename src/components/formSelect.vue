@@ -1,16 +1,16 @@
 
 <template>
-	<div class="form-select">
-		<div @click="openSelect">
-			<span class="form-select__input">{{value ? value : label}}</span>
-			<span :class="selectName"></span>
-		</div>
-		<ul class="form-select__content" v-show="selectSwitch">
-			<template v-if="selectList">
-				<li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item}" @click="selected(item)">{{item}}</li>
-			</template>
-		</ul>
-	</div>
+  <div class="form-select">
+    <div @click="openSelect">
+      <span class="form-select__input">{{value ? value : label}}</span>
+      <span :class="selectName"></span>
+    </div>
+    <ul class="form-select__content" :class="{'h-260': fn}" v-show="selectSwitch" v-on:scroll="checkDivScroolTop" id="scrollDiv">
+      <template v-if="selectList">
+        <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click="selected(item)">{{item[akey]}}</li>
+      </template>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -19,7 +19,8 @@ export default {
   data() {
     return {
       selectSwitch: false,
-      value: ''
+      value: '',
+      scrollTop: 52
     }
   },
   props: {
@@ -28,6 +29,15 @@ export default {
     },
     label: {
       type: [String, Number]
+    },
+    akey: {
+      type: String
+    },
+    aval: {
+      type: String
+    },
+    fn: {
+      type: Function
     }
   },
   computed: {
@@ -35,16 +45,31 @@ export default {
       return this.selectSwitch ? 'triangle-down' : 'triangle-up'
     }
   },
+  mounted() {
+    this.checkDivScroolTop()
+  },
   methods: {
+    checkDivScroolTop(event) {
+      if (!this.fn) {
+        return
+      }
+      if (event && event.target) {
+        console.log(event.target.scrollTop)
+        if (event.target.scrollTop >= this.scrollTop) {
+          this.scrollTop = this.scrollTop + 52
+          this.fn()
+        }
+      }
+    },
     openSelect() {
       this.selectSwitch = !this.selectSwitch
     },
     updataValue(value) {
       this.$emit('input', value)
     },
-    selected(val) {
-      this.value = val
-      this.$emit('input', val)
+    selected(item) {
+      this.value = item[this.akey]
+      this.$emit('input', item[this.aval])
       this.openSelect()
     }
   }
@@ -57,7 +82,7 @@ export default {
   position: relative;
   padding: 0 12px;
   width: 100%;
-  border: 1px solid #ccc;
+  border: 1px solid rgb(243, 243, 243);
   border-radius: 4px;
   height: 35px;
   margin-bottom: 10px;
@@ -71,6 +96,9 @@ export default {
   font-size: 14px;
   line-height: 35px;
   color: rgb(161, 161, 161);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .form-select > div {
   display: flex;
@@ -105,6 +133,16 @@ export default {
   color: rgb(156, 156, 156);
   overflow: hidden;
   z-index: 1;
+}
+.form-select__content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.h-260 {
+  height: 260px;
+  overflow: auto;
+  padding-bottom: 12px;
 }
 .form-select__content li {
   height: 26px;

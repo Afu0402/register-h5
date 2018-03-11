@@ -1,63 +1,126 @@
 <template>
   <div class="intro">
     <div class="intro-img">
-      <img src="./banner.png" alt="">
+      <img src="./img/banner.png" alt="">
     </div>
-    <h3 class="intro__title">2018小学生综合素养测评</h3>
+    <h3 class="intro__title">{{details.name}}</h3>
     <p class="intro__content">
-      Nginx 配置的核心是定义要处理的 URL 以及如何响应这些 URL 请求，即定义一系列的虚拟服务器（Virtual Servers）控制对来自特定域名或者 IP 的请求的处理。 每一个虚拟服务器定义一系列的 location 控制处理特定的 URI 集合。每一个location定义了对映射到自己的请求的处理场景，可以返回一个文件或者代理此请求。 Nginx 由不同的模块组成，这些模块由配置文件中指定的指令控制。 指令分为简单指令和块指令。 一个简单指令包含指令名称和指令参数，以空格分隔，以分号（;）结尾。
-      块指令与简单指令类似，但是由大括号（{和}）包围。 如果块指令大括号中包含其他指令，则称该指令为上下文
+      {{details.test_instructions}}
     </p>
-    <button class="intro__button" @click="toApply">报名</button>
+    <button class="intro__button" @click="toApply">{{buttonText}}</button>
   </div>
 </template>
 
 <script>
-  export default {
-    methods: {
-      tointroList() {
-        this.$router.push('/introList')
-      },
-      toApply() {
+import { getExamSubjectDetail } from '@/api/apis.js'
+import dataCrypt from '@/dataCrypt/dataCrypt.js'
+import { MessageBox } from 'mint-ui'
+import formSelect from '@/components/formSelect.vue'
+import localforage from '@/localforage/localforage'
+export default {
+  data() {
+    return {
+      details: {},
+      schools: [
+        {
+          name: 'xiaoke'
+        }
+      ]
+    }
+  },
+  components: {
+    formSelect
+  },
+  created() {
+    if (this.exam_subject_id && this.student_id) {
+      const data = {
+        student_id: this.student_id,
+        exam_subject_id: this.exam_subject_id
+      }
+      getExamSubjectDetail(data)
+        .then(res => {
+          if (res.data.error_code != 0) {
+            MessageBox('提示',res.data.message)
+            return
+          }
+          this.details = res.data.data
+          this.$store.commit('saveAreaData',this.details.area_data)
+          localforage.setItem('areaData', this.details.area_data, err => console.log(err))
+          
+        })
+        .catch(err => console.log(err))
+    }
+  },
+  computed: {
+    exam_subject_id() {
+      return this.$route.params.exam_subject_id
+    },
+    student_id() {
+      return this.$route.params.student_id
+    },
+    buttonText () {
+      if (this.details.is_apply) {
+        return this.details.is_apply != 0 ? '已报名(查看结果)' : '报名'
+      } else {
+        return '报名'
+      }
+    },
+    userData () {
+      return this.$store.state.user_data
+    }
+  },
+  methods: {
+    toApply() {
+       if (!this.userData.user_id) {
+        MessageBox('提示','您还未登录请先登录').then(() => this.$router.push('/'))
+        return
+      }
+      if (this.details.is_apply == 0) {
         this.$router.push('/apply')
+      } else {
+        this.$router.push('/result')
       }
     }
   }
+}
 </script>
 
 <style>
-  .intro {
-    padding: 15px;
-  }
-  
-  .intro-img {
-    padding: 39.87% 0 0 0;
-    position: relative;
-  }
-  .intro-img>img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-  }
-  .intro__title {
-    color:rgb(5, 202, 202);
-    text-align: center;
-    margin-top: 15px;
-  }
-  .intro__content {
-    margin-bottom: 20px;
-    
-    font-size: 14px;
-    color: rgb(177, 177, 177);
-  }
-  .intro__button {
-    display: block;
-    background: #f86a18;
-    color: #fff;
-    padding: 8px 60px;
-    border-radius: 30px;
-    margin: auto;
-  }
+.intro {
+  padding: 15px;
+  height: 100%;
+  background: url("./img/introbg.png") no-repeat;
+  background-position: 40% 100%;
+}
+
+.intro-img {
+  padding: 39.87% 0 0 0;
+  position: relative;
+}
+.intro-img > img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+.intro__title {
+  color: rgb(5, 202, 202);
+  text-align: center;
+  margin-top: 15px;
+}
+.intro__content {
+  height: calc(100% - 300px);
+  font-size: 14px;
+  color: rgb(177, 177, 177);
+}
+.intro__button {
+  display: block;
+  background: #f86a18;
+  color: #fff;
+  padding: 8px 60px;
+  border-radius: 30px;
+  margin: auto;
+  margin-top: 60px;
+}
 </style>

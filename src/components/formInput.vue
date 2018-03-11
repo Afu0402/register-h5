@@ -1,7 +1,7 @@
 
 <template>
 	<div class="form-input">
-		<input type="text" :value="value" :placeholder="placeholder" @input="updataValue($event.target.value)">
+		<input type="text" :value="value" :disabled="disabled" :placeholder="placeholder" @input="updataValue($event.target.value)">
 	</div>
 </template>
 
@@ -14,6 +14,9 @@ export default {
     },
     placeholder: {
       type: [String, Number]
+    },
+    disabled: {
+      type: Boolean
     }
   },
   methods: {
@@ -29,7 +32,7 @@ export default {
   box-sizing: border-box;
   width: 100%;
   margin-bottom: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid rgb(240, 240, 240);
   border-radius: 4px;
   height: 35px;
   background: #fff;

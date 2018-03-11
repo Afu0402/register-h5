@@ -5,73 +5,127 @@
     </div>
     <div class="login__form">
       <div>
-        <input type="text" v-model="name" placeholder="学生姓名">
+        <input type="text" v-model="postData.name" placeholder="学生姓名">
       </div>
       <div>
-        <input type="text" v-model="phone" placeholder="家长手机号">
+        <input type="text" v-model="postData.phone" placeholder="家长手机号">
       </div>
       <div>
-        <input class="verification" v-model="verifyCode" type="text">
-        <button class="login-form__button" @click="sendVerifyCode">发送验证码</button>
+        <input class="verification" v-model="postData.code" type="text">
+        <button class="login-form__button" @click="sendVerifyCode" :disabled="isSendVerify">{{buttonText}}</button>
       </div>
     </div>
     <button class="login__button" @click="login">登录</button>
     <div class="zi-logo">
-      <img src="./zy-logo.png" alt="">
+      <img src="./img/zy-logo.png" alt="">
     </div>
 
-    <alert :text="text" @confirm="open = false" v-if="open"></alert>
+    <alert :text="text" @confirm="confirm" v-if="open"></alert>
   </div>
 </template>
 
 <script>
-import { getVerifyCode } from '@/api/apis.js'
-import alert from '@/components/alert'
+import dataCrypt from '@/dataCrypt/dataCrypt'
+import localforage from '@/localforage/localforage'
+import { getVerifyCode, checkVerifyCode } from '@/api/apis.js'
+import { MessageBox } from 'mint-ui'
 export default {
   data() {
     return {
+      is_bind_student: null,
+      time: 60,
+      timer: null,
+      isSendVerify: false,
+      buttonText: '发送验证码',
       open: false,
       text: '',
-      name: '',
-      phone: '',
-      verifyCode: ''
+      postData: {
+        name: '',
+        phone: '',
+        code: ''
+      }
     }
   },
-  components: {
-    alert
-  },
   methods: {
-    toActivityList() {
-      this.$router.push('/activityList')
-    },
-    openAlert (msg) {
-      this.open = true
-      this.text = msg
-    },
     sendVerifyCode() {
-      if (!this.name) {
-        this.openAlert('请输入姓名')
+      const phoneReg = /^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/g
+      if (!this.postData.name) {
+        MessageBox('提示', '请输入姓名1023')
         return
       }
-      if (!this.phone) {
-        this.openAlert('请输入手机号码')
+      if (!this.postData.phone || !phoneReg.test(this.postData.phone)) {
+        MessageBox('提示','请输入手机号码')
         return
       }
       const data = {
-        name: this.name,
-        phone: this.phone
+        phone: this.postData.phone,
+        name: this.postData.name
       }
       getVerifyCode(data)
         .then(res => {
-          console.log(res)
+          if (res.data.error_code == 0) {
+            this.isSendVerify = true
+            this.timer = setInterval(() => {
+              this.buttonText = `已发送(${--this.time})`
+              if (this.time <= 0) {
+                clearInterval(this.timer)
+                this.buttonText = '发送验证码'
+                this.time = 60
+                this.isSendVerify = false
+              }
+            }, 800)
+          } else {
+            MessageBox(res.data.message)
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
-    login () {
-      if (!this.verifyCode) {
-        this.openAlert('请输入验证码')
+    login() {
+      const phoneReg = /^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/g
+       if (!this.postData.name) {
+          MessageBox('提示','请输入姓名')
+        return
+      }
+      if (!this.postData.phone || !phoneReg.test(this.postData.phone)) {
+          MessageBox('提示','手机号码格式有误')
+        return
+      }
+      if (!this.postData.code) {
+          MessageBox('提示','请输入验证码')
+        return
+      }
+
+      checkVerifyCode(this.postData)
+        .then(res => {
+          if (res.data.error_code != 0) {
+           MessageBox('提示', res.data.message)
+            return
+          }
+          const data = res.data.data
+          this.is_bind_student = data.is_banding_student
+          if (data.student_data) {
+            this.$store.commit('saveStudentData', data.student_data)
+          }
+          this.$store.commit('saveUserData', data.user_data)
+          this.$store.commit('saveBindingId', data.is_banding_student)
+          const dataStr = dataCrypt.dataEncrypt(data)
+          localforage.setItem('userInfo', dataStr, err => console.log(err))
+           MessageBox('提示', '登录成功').then(() => this.confirm())
+          
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    },
+    confirm() {
+      if (this.is_bind_student == 0) {
+        this.$router.push('/apply')
+        return
+      }
+      if (this.is_bind_student == 1) {
+        this.$router.push('/activityList')
         return
       }
     }
@@ -97,7 +151,7 @@ export default {
   height: 80px;
   border-radius: 50%;
   margin: auto;
-  background: url('./logo.png') no-repeat;
+  background: url('./img/logo.png') no-repeat;
   background-size: cover;
 }
 

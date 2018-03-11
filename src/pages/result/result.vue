@@ -4,8 +4,12 @@
       <h3 class="result__title">《2018小学生综合素养测评》</h3>
       <div class="result__wrap">
         <p class="result__succeed">报名成功</p>
-        <p class="result__hint">请下载注考证自行打印</p>
-        <div class="result__voucher"></div>
+        <p class="result__hint">请下载准考证自行打印</p>
+        <div class="result__voucher">
+          <a href="http://dev-jsl-apply-api.thedeer.cn:88/test">
+            审核中...
+          </a>
+        </div>
         <button class="button">保存准考证到相册</button>
         <hr/>
         <div class="result__grade">
@@ -59,6 +63,12 @@
     width: 100%;
     height: 130px;
     background: #ccc;
+    text-align: center;
+    line-height: 130px;
+    font-size: 20px;
+  }
+  .result__voucher a {
+    color: rgb(65, 65, 65);
   }
   .result__succeed {
     margin:3px 0 15px 0;
@@ -109,5 +119,10 @@
     position: relative;
     top: -20px;
     right: 20px;
+  }
+  .result__voucher a {
+    display: block;
+    width: 100%;
+    height: 100%;;
   }
 </style>

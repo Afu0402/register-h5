@@ -44,6 +44,14 @@ export default new Router({
       meta: {
         title: '小鹿活动'
       }
+    },
+    {
+      path: '/applyResult',
+      name: 'applyResult',
+      component: () => import ('@/pages/applyResult/applyResult.vue'),
+      meta: {
+        title: '小鹿活动'
+      }
     }
   ]
 })
