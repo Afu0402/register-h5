@@ -7,7 +7,10 @@
     </div>
     <ul class="form-select__content" :class="{'h-260': fn}" v-show="selectSwitch" v-on:scroll="checkDivScroolTop" id="scrollDiv">
       <template v-if="selectList">
-        <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click="selected(item)">{{item[akey]}}</li>
+        <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click="selected(item)">
+          {{item[akey]}}
+          <span style="color: red;" v-if="item.residue">(还剩{{item.residue}}个名额)</span>
+        </li>
       </template>
     </ul>
   </div>
@@ -19,7 +22,7 @@ export default {
   data() {
     return {
       selectSwitch: false,
-      value: '',
+      value: this.schoolName ? this.schoolName: '',
       scrollTop: 52
     }
   },
@@ -38,6 +41,15 @@ export default {
     },
     fn: {
       type: Function
+    },
+    residue: {
+      type: Boolean
+    },
+    disabled: {
+      type: null
+    },
+    schoolName: {
+      type: String
     }
   },
   computed: {
@@ -62,6 +74,9 @@ export default {
       }
     },
     openSelect() {
+      if (this.disabled) {
+        return false
+      }
       this.selectSwitch = !this.selectSwitch
     },
     updataValue(value) {

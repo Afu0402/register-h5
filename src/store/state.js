@@ -1,6 +1,6 @@
 export default {
-  student_data: {},
+  student_data: null,
   is_banding_student: '',
   user_data: {},
-  area_data: []
+  applyInfo: []
 }

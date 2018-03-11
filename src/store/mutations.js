@@ -9,7 +9,7 @@ export default {
   saveBindingId(state,data) {
     state.is_banding_student = data
   },
-  saveAreaData(state,data) {
-    state.area_data = data
+  saveApplyInfo(state,data) {
+    state.applyInfo = data
   }
 }

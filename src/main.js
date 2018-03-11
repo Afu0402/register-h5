@@ -26,9 +26,9 @@ localforage.getItem('userInfo', (err, value) => {
   }
 })
 
-localforage.getItem('areaData',(err,value) => {
+localforage.getItem('applyInfo',(err,value) => {
   if (!err && value) {
-    store.commit('saveAreaData',value)
+    store.commit('saveApplyInfo',value)
   }
 })
 

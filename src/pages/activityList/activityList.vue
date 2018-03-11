@@ -21,11 +21,23 @@ export default {
     }
   },
   created() {
+    if (!this.student) {
+      this.$router.push('/')
+      return false
+    }
     getExamSubjectList({ student_id: this.student.student_id }).then(res => {
-        if (res.data.error_code != 0) {
+        const code = res.data.error_code
+        if (code.charAt(0) == 3) {
           MessageBox('提示', res.data.message)
+          return false
         }
-        this.activityList = res.data.data
+        if (code.charAt(0) == 1) {
+          MessageBox('提示', '网络错误')
+          return false
+        }
+        if (code.charAt(0) == 0) {
+          this.activityList = res.data.data
+        }
       })
       .catch(err => {
         console.log(err)
@@ -35,40 +47,38 @@ export default {
     student() {
       return this.$store.state.student_data
     },
-    userData () {
+    userData() {
       return this.$store.state.user_data
     }
   },
   methods: {
     toIntro(item) {
-      if (item.is_apply == 0) {
-        this.$router.push({
-          name: 'intro',
-          params: {
-            student_id: this.student.student_id,
-            exam_subject_id: item.exam_subject_id
-          }
-        })
-      } else {
-        this.$router.push('/result/')
-      }
+      this.$router.push({
+        name: 'intro',
+        params: {
+          student_id: this.student.student_id,
+          exam_subject_id: item.exam_subject_id
+        }
+      })
     },
     searchAndApply(item) {
       if (!this.userData.user_id) {
-        MessageBox('提示','您还未登录请先登录').then(() => this.$router.push('/login'))
+        MessageBox('提示', '您还未登录请先登录').then(() =>
+          this.$router.push('/login')
+        )
         return
-      }
+      };
       if (item.is_apply == 0) {
-          MessageBox('提示','您还未报名,请先报名')
-          return
-      }
-       this.$router.push({
-          name: 'result',
-          params: {
-            student_id: this.student.student_id,
-            exam_subject_id: item.exam_subject_id
-          }
-        })
+        MessageBox('提示', '您还未报名,请先报名')
+        return
+      };
+      this.$router.push({
+        name: 'result',
+        params: {
+          student_id: this.student.student_id,
+          exam_subject_id: item.exam_subject_id
+        }
+      });
     }
   }
 }

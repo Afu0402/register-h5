@@ -16,7 +16,7 @@ export default {
       type: [String, Number]
     },
     disabled: {
-      type: Boolean
+      type: null
     }
   },
   methods: {

@@ -5,17 +5,18 @@
       <div class="result__wrap">
         <p class="result__succeed">报名成功</p>
         <p class="result__hint">请下载准考证自行打印</p>
-        <div class="result__voucher">
-          <a href="http://dev-jsl-apply-api.thedeer.cn:88/test">
+        <div class="result__voucher" @click="openVerify">
+          <a v-if="resultDetails.templates == 1">
             审核中...
           </a>
         </div>
         <button class="button">保存准考证到相册</button>
         <hr/>
-        <div class="result__grade">
+        <div class="result__grade" v-if="resultDetails.templates > 2">
           <div class="result__pass">
             <span>你的综合素养测评结果为：</span>
-            <button class="result__tag">通过</button>
+            <button class="result__tag" v-if="resultDetails.templates == 3">通过</button>
+            <button class="result__tag result__tage--red" v-if="resultDetails.templates == 4">不通过</button>
           </div>
           <div class="result__content">
             <span>成绩:</span>
@@ -28,7 +29,51 @@
 </template>
 
 <script>
-  
+import { getStudentApply } from '@/api/apis.js'
+export default {
+  data () {
+    return {
+      resultDetails: {}
+    }
+  },
+  created() {
+    if (this.exam_subject_id && this.student_id) {
+      const data = {
+        student_id: this.student_id,
+        exam_subject_id: this.exam_subject_id
+      }
+      getStudentApply(data).then(res => {
+        const code = res.data.error_code
+          if (code.charAt(0) == 3) {
+            MessageBox('提示', res.data.message)
+            return
+          }
+          if (code.charAt(0) == 1) {
+            MessageBox('提示', '网络错误')
+            return
+          }
+          if (code == 0) {
+            console.log(res.data.data)
+            this.resultDetails = res.data.data
+          }
+        })
+        .catch(err => console.log(err))
+    }
+  },
+  computed: {
+    exam_subject_id() {
+      return this.$route.params.exam_subject_id
+    },
+    student_id() {
+      return this.$route.params.student_id
+    }
+  },
+  methods: {
+    openVerify() {
+      window.open('http://dev-jsl-apply-api.thedeer.cn:88/test')
+    }
+  }
+}
 </script>
 
 <style>
@@ -104,6 +149,9 @@
     border-radius: 8px;
     color: #fff;
     background: #4f9e08;
+  }
+  .result__tage--red {
+    background-repeat: red;
   }
   .result__content {
     height: 110px;

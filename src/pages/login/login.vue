@@ -97,23 +97,28 @@ export default {
         return
       }
 
-      checkVerifyCode(this.postData)
-        .then(res => {
-          if (res.data.error_code != 0) {
+      checkVerifyCode(this.postData).then(res => {
+          const code = res.data.error_code
+          if (code.charAt(0) == 3) {
            MessageBox('提示', res.data.message)
-            return
+            return false;
+          };
+          if (code.charAt(0) == 1) {
+           MessageBox('提示', '网络错误')
+            return false;
+          };
+          if (code.charAt(0) == 0) {
+            const data = res.data.data
+            this.is_bind_student = data.is_banding_student
+            if (data.student_data) {
+              this.$store.commit('saveStudentData', data.student_data)
+            }
+            this.$store.commit('saveUserData', data.user_data)
+            this.$store.commit('saveBindingId', data.is_banding_student)
+            const dataStr = dataCrypt.dataEncrypt(data)
+            localforage.setItem('userInfo', dataStr, err => console.log(err))
+            MessageBox('提示', '登录成功').then(() => this.confirm())
           }
-          const data = res.data.data
-          this.is_bind_student = data.is_banding_student
-          if (data.student_data) {
-            this.$store.commit('saveStudentData', data.student_data)
-          }
-          this.$store.commit('saveUserData', data.user_data)
-          this.$store.commit('saveBindingId', data.is_banding_student)
-          const dataStr = dataCrypt.dataEncrypt(data)
-          localforage.setItem('userInfo', dataStr, err => console.log(err))
-           MessageBox('提示', '登录成功').then(() => this.confirm())
-          
         })
         .catch(err => {
           console.log(err)

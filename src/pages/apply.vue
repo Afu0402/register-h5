@@ -3,9 +3,9 @@
 
     <div class="apply-info__title">您正在报名：《2018小学生综合素养测评》</div>
     <div style="padding:15px">
-      <div class="apply__info">
+      <div class="apply__info" v-if="!studentInfo">
         <p class="apply-info__p">请您认真审核个人信息，提交后将无法修改。如有问题请咨询客服QQ:2182412785</p>
-        <p class="apply-info__p2">请完善报名资料
+        <p class="apply-info__p2" >请完善报名资料
           <span style="font-size: 12px;">(以下内容均为必填项)</span>
         </p>
       </div>
@@ -15,32 +15,33 @@
         <hr/>
         <div class="apply__warp">
           <div class="flex">
-            <form-input style="width: 48%" v-model="studentData.name" placeholder="学生姓名"></form-input>
-            <form-select style="width: 48%" v-model="studentData.sex" :selectList="sexs" akey="name" aval="num" label="性别"></form-select>
+            <form-input style="width: 48%" v-model="studentData.name" :disabled="studentInfo" placeholder="学生姓名"></form-input>
+            <form-select style="width: 48%" v-model="studentData.sex" :disabled="studentInfo" :selectList="sexs" akey="name" aval="num" label="性别"></form-select>
           </div>
           <div class="flex">
-            <form-input style="width: 48%" v-model="studentData.weight" placeholder="体重"></form-input>
-            <form-input style="width: 48%" v-model="studentData.height" placeholder="身高"></form-input>
+            <form-input style="width: 48%" v-model="studentData.weight" :disabled="studentInfo" placeholder="体重"></form-input>
+            <form-input style="width: 48%" v-model="studentData.height" :disabled="studentInfo" placeholder="身高"></form-input>
           </div>
-          <form-input @click.native="openPicker" :value="formDate"  disabled placeholder="出生日期"></form-input>
-          <form-input v-model="studentData.id_card" placeholder="身份证号码/护照号"></form-input>
-          <form-input v-model="studentData.registered_permanent_residence" placeholder="户籍所在地"></form-input>
-          <form-input v-model="studentData.family_address" placeholder="家庭地址"></form-input>
+          <form-input @click.native="openPicker" :value="formDate" :disabled="studentInfo" placeholder="出生日期"></form-input>
+          <form-input v-model="studentData.id_card" :disabled="studentInfo" placeholder="身份证号码/护照号"></form-input>
+          <form-input v-model="studentData.registered_permanent_residence" :disabled="studentInfo" placeholder="户籍所在地"></form-input>
+          <form-input v-model="studentData.family_address" :disabled="studentInfo" placeholder="家庭地址"></form-input>
           <div class="flex">
-            <form-select style="width: 35%" :selectList="areaData" v-model="areaId" akey="name" aval="area_id" label="区域"></form-select>
-            <form-select ref="infinite" style="width: 62%" :selectList="schools" v-model="studentData.school_id" akey="name" aval="school_id" :fn="fatchSchoolData" label="就读学校名称"></form-select>
+
+            <form-select style="width: 35%" v-if="applyData" :disabled="studentInfo" :selectList="applyData.area_data" v-model="areaId" akey="name" aval="area_id" :schoolName="county" label="区域"></form-select>
+            <form-select ref="infinite" style="width: 62%" :disabled="studentInfo" :selectList="schools" v-model="studentData.school_id" akey="name" aval="school_id" :fn="fatchSchoolData" :schoolName="schoolName" label="就读学校名称"></form-select>
           </div>
           <div class="flex">
-            <form-input style="width: 48%" v-model="studentData.classroom" placeholder="班级"></form-input>
-            <form-input style="width: 48%" v-model="studentData.duty" placeholder="职务"></form-input>
+            <form-input style="width: 48%" :disabled="studentInfo" v-model="studentData.classroom" placeholder="班级"></form-input>
+            <form-input style="width: 48%" :disabled="studentInfo" v-model="studentData.duty" placeholder="职务"></form-input>
           </div>
-          <form-select v-model="studentData.first_will" :selectList="wills" akey="name" aval="name" label="第一志愿"></form-select>
-          <form-select v-model="studentData.second_will" :selectList="wills" akey="name" aval="name" label="第二志愿"></form-select>
-          <form-input v-model="studentData.individual_resume" placeholder="个人简介"></form-input>
-          <form-input v-model="studentData.rewards_and_punishment" placeholder="奖惩情况"></form-input>
+          <form-select v-model="studentData.first_will" :disabled="studentInfo" :selectList="wills" akey="name" aval="name" :schoolName="first_will" label="第一志愿"></form-select>
+          <form-select v-model="studentData.second_will" :disabled="studentInfo" :selectList="wills" akey="name" aval="name" :schoolName="second_will" label="第二志愿"></form-select>
+          <form-input v-model="studentData.individual_resume" :disabled="studentInfo" placeholder="个人简介"></form-input>
+          <form-input v-model="studentData.rewards_and_punishment" :disabled="studentInfo" placeholder="奖惩情况"></form-input>
         </div>
       </div>
-      <div class="apply__form">
+      <div class="apply__form" v-if="!studentInfo">
         <h3 class="apply-form__title">父亲信息</h3>
         <hr/>
         <div class="apply__warp">
@@ -48,7 +49,7 @@
             <form-input style="width: 48%" v-model="fatherData.name" placeholder="姓名"></form-input>
             <form-select style="width: 48%" :selectList="familyRules" v-model="fatherData.related_type" akey="name" aval="num" label="家庭角色"></form-select>
           </div>
-          <form-select :selectList="diploma" v-model="fatherData.standard_of_culture" akey="name" aval="level" label="文化程度"></form-select>
+          <form-select :selectList="diploma" v-model="fatherData.standard_of_culture" akey="name" aval="level" label="文化程度" :residue="true"></form-select>
           <form-input v-model="fatherData.work_address" placeholder="单位地址"></form-input>
           <form-input v-model="fatherData.duty" placeholder="职务"></form-input>
           <form-input v-model="fatherData.phone" placeholder="手机号码"></form-input>
@@ -56,7 +57,7 @@
         </div>
       </div>
 
-      <div class="apply__form">
+      <div class="apply__form" v-if="!studentInfo">
         <h3 class="apply-form__title">母亲信息</h3>
         <hr/>
         <div class="apply__warp">
@@ -71,9 +72,11 @@
           <form-input v-model="motherData.individual_resume" placeholder="个人简介"></form-input>
         </div>
       </div>
+      <div class="apply__warp" style="background:#f4f4f4;">
+        <form-select style="margin: 0;" v-if="applyData" :selectList="applyData.exam_position_data" v-model="exam_position_id" akey="name" aval="eaxm_position_id" label="考点选择"></form-select>
+      </div>
     </div>
-
-    <button class="apply__button" @click="toResult">提交报名</button>
+    <button class="apply__button" @click="sumbit">提交报名</button>
 
     <mt-datetime-picker ref="picker" @confirm="handleConfirm" :startDate="new Date(1985)" v-model="pickerVisible" type="date" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
     </mt-datetime-picker>
@@ -83,14 +86,20 @@
 <script>
 import formInput from '@/components/formInput.vue'
 import formSelect from '@/components/formSelect.vue'
-import { getSchoolData, addStudentData } from '@/api/apis.js'
+import { getSchoolData, addStudentData, addStudentApply } from '@/api/apis.js'
 import { MessageBox } from 'mint-ui'
 export default {
   data() {
     return {
+      first_will: '', 
+      second_will:'',
+      county: '',
+      schoolName: '',
+      
       areaId: 5151,
       value: '',
       pickerVisible: new Date(),
+      exam_position_id: '',
       studentData: {
         user_id: '',
         name: '',
@@ -130,7 +139,7 @@ export default {
       },
       sexs: [{ name: '男', num: 1 }, { name: '女', num: 2 }],
       familyRules: [{ name: '父亲', num: 1 }, { name: '母亲', num: 2 }],
-      wills:[{ name: '华伦中学台江校区'}, { name: '华伦中学晋安校区'}],
+      wills: [{ name: '华伦中学台江校区' }, { name: '华伦中学晋安校区' }],
       diploma: [
         {
           name: '无文化程度',
@@ -182,6 +191,14 @@ export default {
   },
   created() {
     this.fatchSchoolData()
+    if (this.studentInfo) {
+      this.studentData = this.studentInfo;
+      this.pickerVisible = new Date(this.studentInfo.birthday * 1000);
+      this.schoolName = this.studentInfo.school_data.school_name;
+      this.first_will = this.studentInfo.first_will;
+      this.second_will = this.studentInfo.second_will;
+      this.county = this.studentInfo.school_data.county;
+    }
   },
   computed: {
     formDate() {
@@ -191,12 +208,15 @@ export default {
     userData() {
       return this.$store.state.user_data
     },
-    areaData () {
-      return this.$store.state.area_data
+    studentInfo() {
+      return this.$store.state.student_data
+    },
+    applyData() {
+      return this.$store.state.applyInfo
     }
   },
   watch: {
-    areaId () {
+    areaId() {
       this.$refs.infinite.scrollTop = 52
       this.end = false
       this.schools = []
@@ -206,15 +226,20 @@ export default {
   },
   methods: {
     openPicker() {
+      if (this.studentData) {
+        return false
+      }
       this.$refs.picker.open()
     },
     handleConfirm(value) {
-      const date = Date.parse(value).toString().substr(0, 10)
+      const date = Date.parse(value)
+        .toString()
+        .substr(0, 10)
       this.studentData.birthday = date
     },
-    toResult() {
-      if (!this.studentData.id_card) {
-        MessageBox('提示', '请输入学生信息-身份证')
+    sumbit() {
+      if (this.studentInfo) {
+        this.sumbitStudentApply()
         return
       }
       if (!this.studentData.name) {
@@ -223,6 +248,10 @@ export default {
       }
       if (!this.studentData.sex) {
         MessageBox('提示', '选择学生信息-性别')
+        return
+      }
+      if (!this.studentData.id_card || this.studentData.id_card.length < 18) {
+        MessageBox('提示', '请输入学生信息-身份证(规格18位)')
         return
       }
       if (!this.studentData.birthday) {
@@ -306,27 +335,84 @@ export default {
       this.studentData.user_id = this.userData.user_id
       this.studentData.family_data.push(this.fatherData, this.motherData)
       addStudentData(this.studentData).then(res => {
-          if(res.data.error_code == 0) {
-            const data = JSON.parse(res.data.data)
-            MessageBox('提示', '报名成功').then(() => this.$router.push('/activityList'))
-            return
+          if (res.data.error_code == 0) {
+            const studentdata = JSON.parse(res.data.data)
+            let data = {
+              student_id: studentdata.student_id,
+              exam_subject_id: this.applyData.exam_subject_id,
+              exam_position_id: this.exam_position_id
+            }
+            console.log(studentdata)
+            addStudentApply(data).then(res => {
+               let code = res.data.error_code 
+              if (code.charAt(0) == 0) {
+                MessageBox('提示', '报名成功').then(() =>this.$router.push('/activityList'))
+                return false;
+              }
+              if (code.charAt(0) == 3) {
+                MessageBox('提示', res.data.message)
+                return false;
+              }
+               if (code.charAt(0) == 1) {
+                MessageBox('提示', '网络错误')
+                return false;
+              }
+            })
+            return false;
           }
+          if (res.data.error_code  == 3) {
             MessageBox('提示', res.data.message)
+            return false;
+          }
+          if (res.data.error_code  == 1) {
+            MessageBox('提示', '网络错误')
+              return false;
+          }
         })
         .catch(err => {
           console.log(err)
         })
     },
+    // 提交报名
+    sumbitStudentApply() {
+      if (!this.exam_position_id) {
+        MessageBox('提示','请选择考点')
+        return false
+      };
+      let residue = this.applyData.exam_position_data.filter((item) => item.eaxm_position_id == this.exam_position_id)[0].residue
+      if (residue == 0) {
+        MessageBox('提示','该考点名额已满请选择其他考点')
+        return false;
+      };
+      let data = {
+        student_id: this.studentInfo.student_id,
+        exam_subject_id: this.applyData.exam_subject_id,
+        exam_position_id: this.exam_position_id
+      }
+      addStudentApply(data).then(res => {
+        if (res.data.error_code == 0) {
+          MessageBox('提示', '报名成功').then(() =>
+            this.$router.push('/activityList')
+          )
+        } else {
+          MessageBox('提示', res.data.message)
+        }
+      })
+    },
     // 根据区域获取对应区域内的学校
     fatchSchoolData() {
-       if(this.isajaxsend) {
-           return false;
-         }
-        if (this.end) {
-          return false;
-        }
-         this.isajaxsend = true
-      getSchoolData({ page: this.page, page_num: this.page_num,county_id: this.areaId}).then(res => {
+      if (this.isajaxsend) {
+        return false
+      }
+      if (this.end) {
+        return false
+      }
+      this.isajaxsend = true
+      getSchoolData({
+        page: this.page,
+        page_num: this.page_num,
+        county_id: this.areaId
+      }).then(res => {
         if (res.data.error_code == 0 && res.data.data) {
           this.schools = this.schools.concat(res.data.data)
           if (res.data.data.length != this.page_num) {
@@ -339,7 +425,7 @@ export default {
         }
         this.isajaxsend = false
       })
-    },
+    }
   }
 }
 </script>

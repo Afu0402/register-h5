@@ -10,7 +10,6 @@
     <button class="intro__button" @click="toApply">{{buttonText}}</button>
   </div>
 </template>
-
 <script>
 import { getExamSubjectDetail } from '@/api/apis.js'
 import dataCrypt from '@/dataCrypt/dataCrypt.js'
@@ -37,16 +36,29 @@ export default {
         student_id: this.student_id,
         exam_subject_id: this.exam_subject_id
       }
-      getExamSubjectDetail(data)
-        .then(res => {
-          if (res.data.error_code != 0) {
-            MessageBox('提示',res.data.message)
-            return
+      getExamSubjectDetail(data).then(res => {
+          const code = res.data.error_code
+
+          if (code.charAt(0) == 3) {
+            MessageBox('提示', res.data.message)
+            return false
           }
-          this.details = res.data.data
-          this.$store.commit('saveAreaData',this.details.area_data)
-          localforage.setItem('areaData', this.details.area_data, err => console.log(err))
-          
+          if (code.charAt(0) == 1) {
+            MessageBox('提示', '网络错误')
+            return false
+          }
+          if (code.charAt(0) == 0) {
+            MessageBox('提示', res.data.message)
+            this.details = res.data.data
+            const applyData = {
+              exam_subject_id: this.details.exam_subject_id,
+              area_data: this.details.area_data,
+              exam_position_data: this.details.exam_position_data
+            }
+            this.$store.commit('saveApplyInfo', applyData)
+            localforage.setItem('applyInfo', applyData, err => console.log(err))
+            console.log(res.data.data)
+          }
         })
         .catch(err => console.log(err))
     }
@@ -58,27 +70,35 @@ export default {
     student_id() {
       return this.$route.params.student_id
     },
-    buttonText () {
+    buttonText() {
       if (this.details.is_apply) {
         return this.details.is_apply != 0 ? '已报名(查看结果)' : '报名'
       } else {
         return '报名'
       }
     },
-    userData () {
+    userData() {
       return this.$store.state.user_data
     }
   },
   methods: {
     toApply() {
-       if (!this.userData.user_id) {
-        MessageBox('提示','您还未登录请先登录').then(() => this.$router.push('/'))
+      if (!this.userData.user_id) {
+        MessageBox('提示', '您还未登录请先登录').then(() =>
+          this.$router.push('/')
+        )
         return
       }
-      if (this.details.is_apply == 0) {
-        this.$router.push('/apply')
+      if (this.details.is_apply != 0) {
+        this.$router.push({
+          name: 'result',
+          params: {
+            student_id: this.student_id,
+            exam_subject_id: this.exam_subject_id
+          }
+        })
       } else {
-        this.$router.push('/result')
+        this.$router.push('/apply')
       }
     }
   }
@@ -89,7 +109,7 @@ export default {
 .intro {
   padding: 15px;
   height: 100%;
-  background: url("./img/introbg.png") no-repeat;
+  background: url('./img/introbg.png') no-repeat;
   background-position: 40% 100%;
 }
 
