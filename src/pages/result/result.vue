@@ -1,16 +1,15 @@
 <template>
   <div class="result">
     <div class="resutl__main">
-      <h3 class="result__title">《2018小学生综合素养测评》</h3>
+      <h3 class="result__title">《{{exam_name}}》</h3>
       <div class="result__wrap">
         <p class="result__succeed">报名成功</p>
         <p class="result__hint">请下载准考证自行打印</p>
-        <div class="result__voucher" @click="openVerify">
-          <a v-if="resultDetails.templates == 1">
-            审核中...
-          </a>
+        <div class="result__voucher">
+          <span v-if="resultDetails.templates == 1"> 审核中...</span>
+          <img v-if="resultDetails.templates >= 2" :src="resultDetails.admission_ticket_url" @click="openVerify" alt="">
         </div>
-        <button class="button">保存准考证到相册</button>
+        <button class="button" :class="{'button--has':resultDetails.templates >= 2}" @click="openVerify">保存准考证到相册</button>
         <hr/>
         <div class="result__grade" v-if="resultDetails.templates > 2">
           <div class="result__pass">
@@ -20,7 +19,7 @@
           </div>
           <div class="result__content">
             <span>成绩:</span>
-            <span>A</span>
+            <span>{{resultDetails.total}}</span>
           </div>
         </div>
       </div>
@@ -29,7 +28,8 @@
 </template>
 
 <script>
-import { getStudentApply } from '@/api/apis.js'
+import { MessageBox } from 'mint-ui'
+import { getStudentApply, updateStudentExamPerformancePrint} from '@/api/apis.js'
 export default {
   data () {
     return {
@@ -37,9 +37,9 @@ export default {
     }
   },
   created() {
-    if (this.exam_subject_id && this.student_id) {
+    if (this.exam_subject_id && this.studentData) {
       const data = {
-        student_id: this.student_id,
+        student_id: this.studentData.student_id,
         exam_subject_id: this.exam_subject_id
       }
       getStudentApply(data).then(res => {
@@ -62,15 +62,29 @@ export default {
   },
   computed: {
     exam_subject_id() {
-      return this.$route.params.exam_subject_id
+      return this.$store.state.exam_id
     },
-    student_id() {
-      return this.$route.params.student_id
+    studentData() {
+      return this.$store.state.student_data
+    },
+     exam_name() {
+      return this.$store.state.exam_name;
     }
   },
   methods: {
     openVerify() {
+      if (this.resultDetails.templates < 2) {
+        return false;
+      }
+      updateStudentExamPerformancePrint({student_exam_performance_id: this.resultDetails.student_exam_performance_id})
       window.open('http://dev-jsl-apply-api.thedeer.cn:88/test')
+    }
+  },
+  beforeRouteLeave(to,from,next) {
+    if (to.name === 'activitylist') {
+      next()
+    } else {
+      next({ path: '/activitylist' })
     }
   }
 }
@@ -105,12 +119,24 @@ export default {
     color: rgb(71, 71, 71);
   }
   .result__voucher {
-    width: 100%;
-    height: 130px;
+    position: relative;
+    padding-top: 68%;
     background: #ccc;
     text-align: center;
-    line-height: 130px;
     font-size: 20px;
+  }
+   .result__voucher > span {
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+  .result__voucher > img {
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
   .result__voucher a {
     color: rgb(65, 65, 65);
@@ -136,9 +162,12 @@ export default {
     display: block;
     margin: 12px auto;
     padding:8px 10px;
-    background: #eb7b16;
+    background: rgb(158, 158, 158);
     color: #fff;
     border-radius:20px;
+  }
+  .button--has {
+    background: #eb7b16;
   }
   .result__pass {
     font-size: 14px;
@@ -151,7 +180,7 @@ export default {
     background: #4f9e08;
   }
   .result__tage--red {
-    background-repeat: red;
+    background: red;
   }
   .result__content {
     height: 110px;

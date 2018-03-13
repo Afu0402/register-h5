@@ -7,6 +7,10 @@ export default new Router({
   routes: [
     {
       path: '/',
+      redirect: '/activitylist'
+    },
+    {
+      path: '/login',
       name: 'login',
       component: () => import ('@/pages/login/login.vue'),
       meta: {
@@ -14,8 +18,8 @@ export default new Router({
       }
     },
     {
-      path: '/activityList',
-      name: 'activityList',
+      path: '/activitylist',
+      name: 'activitylist',
       component: () => import ('@/pages/activityList/activityList.vue'),
       meta: {
         title: '小鹿活动'
@@ -41,14 +45,6 @@ export default new Router({
       path: '/result',
       name: 'result',
       component: () => import ('@/pages/result/result.vue'),
-      meta: {
-        title: '小鹿活动'
-      }
-    },
-    {
-      path: '/applyResult',
-      name: 'applyResult',
-      component: () => import ('@/pages/applyResult/applyResult.vue'),
       meta: {
         title: '小鹿活动'
       }

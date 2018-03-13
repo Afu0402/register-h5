@@ -11,5 +11,11 @@ export default {
   },
   saveApplyInfo(state,data) {
     state.applyInfo = data
+  },
+  setCurrentExamId(state, data) {
+    state.exam_id = data
+  },
+  currentExamName(state, data) {
+    state.exam_name = data
   }
 }

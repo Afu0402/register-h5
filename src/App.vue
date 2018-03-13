@@ -1,6 +1,5 @@
 <template>
   <div id="app">
-    <!-- <div class="login__title">小鹿活动</div> -->
     <router-view/>
   </div>
 </template>
@@ -15,8 +14,7 @@ export default {
   #app {
     height: 100%;
     max-width: 720px;
-    margin: auto;
-    overflow-y: hidden;
+    overflow: hidden;
     }
  .login__title {
     height: 30px;

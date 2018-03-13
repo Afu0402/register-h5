@@ -2,5 +2,7 @@ export default {
   student_data: null,
   is_banding_student: '',
   user_data: {},
-  applyInfo: []
+  applyInfo: [],
+  exam_id: '',
+  exam_name: ''
 }

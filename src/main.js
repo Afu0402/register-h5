@@ -6,12 +6,17 @@ import router from './router'
 import store from './store'
 
 // some pulgin require...
-import { DatetimePicker} from 'mint-ui';
+import { DatetimePicker, InfiniteScroll,Loadmore,Indicator,Spinner } from 'mint-ui';
 import localforage from './localforage/localforage'
 import dataCrypt from './dataCrypt/dataCrypt'
+import FastClick from 'fastclick'
 import './assets/common.css'
 import 'mint-ui/lib/style.css'
 Vue.component(DatetimePicker.name, DatetimePicker); 
+Vue.component(Loadmore.name, Loadmore);
+Vue.component(Spinner.name, Spinner);
+Vue.use(InfiniteScroll);
+FastClick.attach(document.body)
 
 localforage.getItem('userInfo', (err, value) => {
   if (!err && value) {

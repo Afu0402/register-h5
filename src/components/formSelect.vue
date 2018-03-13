@@ -3,9 +3,9 @@
   <div class="form-select">
     <div @click="openSelect">
       <span class="form-select__input">{{value ? value : label}}</span>
-      <span :class="selectName"></span>
+      <span :class="selectName" v-if="!disabled"></span>
     </div>
-    <ul class="form-select__content" :class="{'h-260': fn}" v-show="selectSwitch" v-on:scroll="checkDivScroolTop" id="scrollDiv">
+    <ul class="form-select__content" :class="{'h-260': fn}" v-show="selectSwitch">
       <template v-if="selectList">
         <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click="selected(item)">
           {{item[akey]}}
@@ -18,13 +18,14 @@
 
 <script>
 export default {
-  name: 'form-select',
+  name: "form-select",
   data() {
     return {
+      allLoaded:false,
       selectSwitch: false,
-      value: this.schoolName ? this.schoolName: '',
+      value: this.schoolName ? this.schoolName : "",
       scrollTop: 52
-    }
+    };
   },
   props: {
     selectList: {
@@ -54,41 +55,26 @@ export default {
   },
   computed: {
     selectName() {
-      return this.selectSwitch ? 'triangle-down' : 'triangle-up'
+      return this.selectSwitch ? "triangle-down" : "triangle-up";
     }
-  },
-  mounted() {
-    this.checkDivScroolTop()
   },
   methods: {
-    checkDivScroolTop(event) {
-      if (!this.fn) {
-        return
-      }
-      if (event && event.target) {
-        console.log(event.target.scrollTop)
-        if (event.target.scrollTop >= this.scrollTop) {
-          this.scrollTop = this.scrollTop + 52
-          this.fn()
-        }
-      }
-    },
     openSelect() {
-      if (this.disabled) {
-        return false
+      if (this.disabled || this.fn) {
+        return false;
       }
-      this.selectSwitch = !this.selectSwitch
+      this.selectSwitch = !this.selectSwitch;
     },
     updataValue(value) {
-      this.$emit('input', value)
+      this.$emit("input", value);
     },
     selected(item) {
-      this.value = item[this.akey]
-      this.$emit('input', item[this.aval])
-      this.openSelect()
+      this.value = item[this.akey];
+      this.$emit("input", item[this.aval]);
+      this.openSelect();
     }
   }
-}
+};
 </script>
 
 <style>
@@ -110,7 +96,7 @@ export default {
   height: 100%;
   font-size: 14px;
   line-height: 35px;
-  color: rgb(161, 161, 161);
+  color: rgb(90, 90, 90);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -137,6 +123,7 @@ export default {
   border-radius: 2px;
 }
 .form-select__content {
+  -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
   position: absolute;
   width: 100%;
@@ -147,9 +134,10 @@ export default {
   border-radius: 4px;
   color: rgb(156, 156, 156);
   overflow: hidden;
-  z-index: 1;
+  z-index: 99;
+  
 }
-.form-select__content {
+.form-select__content li {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -166,6 +154,6 @@ export default {
   text-indent: 12px;
 }
 .form-select__active {
-  color: #f86a18;
+  color: #f86a18e1;
 }
 </style>

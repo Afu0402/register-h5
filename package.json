@@ -5,13 +5,14 @@
   "author": "宾克斯的美酒 <18859968972@139.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "webpack-dev-server  --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "build": "node build/build.js"
   },
   "dependencies": {
     "axios": "^0.18.0",
     "crypto-js": "^3.1.9-1",
+    "fastclick": "^1.0.6",
     "localforage": "^1.6.0",
     "mint-ui": "^2.2.13",
     "vue": "^2.5.2",

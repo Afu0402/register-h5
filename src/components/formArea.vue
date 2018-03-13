@@ -1,7 +1,8 @@
 
 <template>
-	<div class="form-input" :class="{'form-input--fcous': focus}">
-		<input @focus="handlefocus" @blur="focus = false" type="text" :value="value" :disabled="disabled" :placeholder="placeholder" @input="updataValue($event.target.value)">
+	<div class="form-area " :class="{'form-input--fcous': focus}">
+		<textarea rows="3" @focus="handlefocus" @blur="focus = false" type="text" :value="value" :disabled="disabled" :placeholder="placeholder" @input="updataValue($event.target.value)">
+		</textarea>
 	</div>
 </template>
 
@@ -36,30 +37,27 @@ export default {
 </script>
 
 <style>
-.form-input {
+.form-area {
   box-sizing: border-box;
   width: 100%;
   margin-bottom: 10px;
   border: 1px solid rgb(240, 240, 240);
   border-radius: 4px;
-  height: 35px;
+  height: 80px;
   background: #fff;
 }
 .form-input--fcous {
   border-color: #f86a18;
 }
-.form-input input {
+.form-area textarea {
+  display: block;
   width: 100%;
   height: 100%;
   font-size: 14px;
   text-indent: 12px;
   color: rgb(90, 90, 90);
 }
-.form-input input[disabled]{
-  color: rgb(90, 90, 90);
-  opacity: 1;
-}
-input:disabled{
+textarea:disabled{
     -webkit-text-fill-color: #000;
     -webkit-opacity: 1;
     color: #000;

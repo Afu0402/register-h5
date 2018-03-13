@@ -11,7 +11,7 @@
         <input type="text" v-model="postData.phone" placeholder="家长手机号">
       </div>
       <div>
-        <input class="verification" v-model="postData.code" type="text">
+        <input class="verification" placeholder="请输入验证码" v-model="postData.code" type="text">
         <button class="login-form__button" @click="sendVerifyCode" :disabled="isSendVerify">{{buttonText}}</button>
       </div>
     </div>
@@ -20,7 +20,6 @@
       <img src="./img/zy-logo.png" alt="">
     </div>
 
-    <alert :text="text" @confirm="confirm" v-if="open"></alert>
   </div>
 </template>
 
@@ -28,7 +27,7 @@
 import dataCrypt from '@/dataCrypt/dataCrypt'
 import localforage from '@/localforage/localforage'
 import { getVerifyCode, checkVerifyCode } from '@/api/apis.js'
-import { MessageBox } from 'mint-ui'
+import { MessageBox, Toast } from 'mint-ui'
 export default {
   data() {
     return {
@@ -37,8 +36,6 @@ export default {
       timer: null,
       isSendVerify: false,
       buttonText: '发送验证码',
-      open: false,
-      text: '',
       postData: {
         name: '',
         phone: '',
@@ -112,27 +109,23 @@ export default {
             this.is_bind_student = data.is_banding_student
             if (data.student_data) {
               this.$store.commit('saveStudentData', data.student_data)
+            } else {
+              this.$store.commit('saveStudentData', null)
             }
             this.$store.commit('saveUserData', data.user_data)
             this.$store.commit('saveBindingId', data.is_banding_student)
             const dataStr = dataCrypt.dataEncrypt(data)
             localforage.setItem('userInfo', dataStr, err => console.log(err))
-            MessageBox('提示', '登录成功').then(() => this.confirm())
+            console.log(res.data.data)
+            Toast({
+              message: '登录成功',
+              duration: 1800
+            });
+            this.$router.push('/activitylist')
           }
-        })
-        .catch(err => {
+        }).catch(err => {
           console.log(err)
         })
-    },
-    confirm() {
-      if (this.is_bind_student == 0) {
-        this.$router.push('/apply')
-        return
-      }
-      if (this.is_bind_student == 1) {
-        this.$router.push('/activityList')
-        return
-      }
     }
   }
 }
@@ -175,11 +168,13 @@ export default {
   outline: none;
   width: 100%;
   text-align: center;
+  font-size: 16px;
 }
 
 .login__form .verification {
-  width: 140px;
+  width: 180px;
   text-align: right;
+  margin-right:25px;
 }
 
 .login-form__button {
@@ -195,6 +190,7 @@ export default {
   width: 100%;
   height: 45px;
   margin-top: 70px;
+  font-size: 14px;
   border-radius: 166px;
   background: #f86a18;
   color: #fff;
