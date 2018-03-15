@@ -1,13 +1,21 @@
 <template>
   <div class="intro">
-    <div class="intro-img">
-      <img src="./img/banner.png" alt="">
+    <p class="common-title">
+      <span>小鹿活动</span>
+      <span class="back-icon" @click="goblack">返回</span>
+    </p>
+    <div class="intro-wrap">
+      <div class="intro-img">
+        <img :src="details.detail_image_url" alt="">
+        <button class="intro__button" @click="toApply">{{buttonText}}</button>
+      </div>
     </div>
+    <!-- 
     <h3 class="intro__title">{{details.name}}</h3>
     <p class="intro__content">
-      {{details.test_instructions}}
-    </p>
-    <button class="intro__button" @click="toApply">{{buttonText}}</button>
+          {{details.test_instructions}}
+    </p> -->
+    <!-- <button class="intro__button" @click="toApply">{{buttonText}}</button> -->
   </div>
 </template>
 <script>
@@ -20,6 +28,7 @@ export default {
   data() {
     return {
       details: {},
+      imgSrc: '',
       schools: [
         {
           name: "xiaoke"
@@ -53,15 +62,6 @@ export default {
           }
           if (code.charAt(0) == 0) {
             this.details = res.data.data;
-            getApplyFlitterInfo({exam_subject_id: this.details.exam_subject_id}).then(res => {
-                if(res.data.error_code == 0) {
-                  console.log(res.data.data)
-                  this.$store.commit("saveApplyInfo", res.data.data);
-                  localforage.setItem("applyInfo", res.data.data, err =>
-                    console.log(err)
-                  );
-                }
-             })
           }
         })
         .catch(err => console.log(err));
@@ -86,6 +86,9 @@ export default {
     }
   },
   methods: {
+    goblack() {
+      this.$router.go(-1)
+    },
     toApply() {
         const status = this.details.exam_status;
         const isApply = this.details.is_apply;
@@ -121,14 +124,20 @@ export default {
 
 <style>
 .intro {
-  padding: 15px;
   height: 100%;
-  background: url("./img/introbg.png") no-repeat;
-  background-position: 40% 100%;
+  /* background-size: cover;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; */
+  
 }
-
+.intro-wrap {
+  overflow-y: auto;
+  height: calc(100% - 35px);
+  -webkit-overflow-scrolling: touch;
+  
+}
 .intro-img {
-  padding: 39.87% 0 0 0;
+  padding: 292.3% 0 0 0;
   position: relative;
 }
 .intro-img > img {
@@ -144,20 +153,23 @@ export default {
   margin-top: 15px;
 }
 .intro__content {
+  text-indent: 20px;
   height: calc(100% - 300px);
-  font-size: 14px;
+  font-size: 16px;
   color: rgb(177, 177, 177);
 }
 .intro__button {
   position: absolute;
-  bottom: 20px;
+  bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
   display: block;
   background: #f86a18;
   color: #fff;
-  padding: 10px 40px;
+  width: 80%;
+  padding:12px 0;
   border-radius: 30px;
   margin: auto;
+  font-size: 16px;
 }
 </style>

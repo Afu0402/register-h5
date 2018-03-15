@@ -7,7 +7,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/activitylist'
+      redirect: '/login'
     },
     {
       path: '/login',

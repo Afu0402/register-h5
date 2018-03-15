@@ -25,3 +25,18 @@ a {
 .mint-msgbox-confirm {
     color: #f86a18 !important;
 }
+.common-title{
+    position: relative;
+    height: 35px;
+    background: #f86a18;
+    color: #fff;
+    font-size: 13px;
+    text-align: center;
+    line-height: 35px;
+}
+.back-icon {
+    position: absolute;
+    left: 10px;
+    top:0;
+    font-size: 12px;
+  }

@@ -5,9 +5,9 @@
       <span class="form-select__input">{{value ? value : label}}</span>
       <span :class="selectName" v-if="!disabled"></span>
     </div>
-    <ul class="form-select__content" :class="{'h-260': fn}" v-show="selectSwitch">
+    <ul class="form-select__content" :class="{'h-260':limit}" v-show="selectSwitch">
       <template v-if="selectList">
-        <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click="selected(item)">
+        <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click.stop="selected(item)">
           {{item[akey]}}
           <span style="color: red;" v-if="item.residue">(还剩{{item.residue}}个名额)</span>
         </li>
@@ -28,6 +28,9 @@ export default {
     };
   },
   props: {
+    limit: {
+      type: Boolean
+    },
     selectList: {
       type: Array
     },
@@ -53,6 +56,14 @@ export default {
       type: String
     }
   },
+  created() {
+    document.addEventListener('click', (e) => {
+      console.log(e.target)
+      console.log(this.$el)
+      console.log(this.$el.contains(e.target))
+       if (!this.$el.contains(e.target)) this.selectSwitch = false
+   })
+  },
   computed: {
     selectName() {
       return this.selectSwitch ? "triangle-down" : "triangle-up";
@@ -72,6 +83,9 @@ export default {
       this.value = item[this.akey];
       this.$emit("input", item[this.aval]);
       this.openSelect();
+    },
+    documentHandler() {
+      this.selectSwitch = false
     }
   }
 };

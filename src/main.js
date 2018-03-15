@@ -12,15 +12,15 @@ import dataCrypt from './dataCrypt/dataCrypt'
 import FastClick from 'fastclick'
 import './assets/common.css'
 import 'mint-ui/lib/style.css'
+
 Vue.component(DatetimePicker.name, DatetimePicker); 
 Vue.component(Loadmore.name, Loadmore);
 Vue.component(Spinner.name, Spinner);
 Vue.use(InfiniteScroll);
 FastClick.attach(document.body)
-
 localforage.getItem('userInfo', (err, value) => {
   if (!err && value) {
-    const data = JSON.parse(dataCrypt.dataDecrypt(value))
+    const data = value;
     if (data.student_data) {
       store.commit('saveStudentData', data.student_data)
     }
@@ -37,12 +37,22 @@ localforage.getItem('applyInfo',(err,value) => {
   }
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   localforage.getItem('userInfo', (err, value) => {
+//     if (!err && value) {
+//       if (to.name != 'login' && !value.user_data) {
+//         next('/login')
+//         return false;
+//       } 
+//       if (to.name == 'login' && value.user_data) {
+//         next('/activitylist')
+//         return false;
+//       } 
+//     } else {
+//       next()
+//     }
+//   })
+// })
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

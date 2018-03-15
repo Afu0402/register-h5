@@ -43,11 +43,22 @@ export default {
       }
     }
   },
+  created () {
+    if (this.userData) {
+      this.$router.push('/activitylist');
+      return
+    }
+  },
+  computed: {
+    userData() {
+      return this.$store.state.user_data
+    }
+  },
   methods: {
     sendVerifyCode() {
       const phoneReg = /^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$/g
       if (!this.postData.name) {
-        MessageBox('提示', '请输入姓名1023')
+        MessageBox('提示', '请输入姓名')
         return
       }
       if (!this.postData.phone || !phoneReg.test(this.postData.phone)) {
@@ -114,9 +125,7 @@ export default {
             }
             this.$store.commit('saveUserData', data.user_data)
             this.$store.commit('saveBindingId', data.is_banding_student)
-            const dataStr = dataCrypt.dataEncrypt(data)
-            localforage.setItem('userInfo', dataStr, err => console.log(err))
-            console.log(res.data.data)
+            localforage.setItem('userInfo', data, err => console.log(err))
             Toast({
               message: '登录成功',
               duration: 1800
@@ -167,6 +176,7 @@ export default {
   display: inline-block;
   outline: none;
   width: 100%;
+  height: 40px;
   text-align: center;
   font-size: 16px;
 }
@@ -174,7 +184,7 @@ export default {
 .login__form .verification {
   width: 180px;
   text-align: right;
-  margin-right:25px;
+  margin-right:40px;
 }
 
 .login-form__button {
@@ -189,7 +199,7 @@ export default {
   display: block;
   width: 100%;
   height: 45px;
-  margin-top: 70px;
+  margin-top: 55px;
   font-size: 14px;
   border-radius: 166px;
   background: #f86a18;

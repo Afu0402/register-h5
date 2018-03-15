@@ -1,4 +1,6 @@
 import dataCrypt from '@/dataCrypt/dataCrypt.js'
+import localforage from '@/localforage/localforage'
+
 export default {
   saveUserData(state,data) {
     state.user_data = data
@@ -17,5 +19,14 @@ export default {
   },
   currentExamName(state, data) {
     state.exam_name = data
+  },
+  clearStoreAndLocal(state, data) {
+    state.exam_name = null;
+    state.exam_id = null;
+    state.applyInfo = null;
+    state.is_banding_student = null;
+    state.student_data = null;
+    state.user_data = null;
+    localforage.clear()
   }
 }
