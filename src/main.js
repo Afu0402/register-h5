@@ -7,52 +7,38 @@ import store from './store'
 
 // some pulgin require...
 import { DatetimePicker, InfiniteScroll,Loadmore,Indicator,Spinner } from 'mint-ui';
-import localforage from './localforage/localforage'
-import dataCrypt from './dataCrypt/dataCrypt'
-import FastClick from 'fastclick'
-import './assets/common.css'
-import 'mint-ui/lib/style.css'
+import localforage from './localforage/localforage';
+import dataCrypt from './dataCrypt/dataCrypt';
+import FastClick from 'fastclick';
+import initIdentity from '@/init/init';
+import './assets/common.css' ;
+import 'mint-ui/lib/style.css';
 
 Vue.component(DatetimePicker.name, DatetimePicker); 
 Vue.component(Loadmore.name, Loadmore);
 Vue.component(Spinner.name, Spinner);
 Vue.use(InfiniteScroll);
-FastClick.attach(document.body)
-localforage.getItem('userInfo', (err, value) => {
-  if (!err && value) {
-    const data = value;
-    if (data.student_data) {
-      store.commit('saveStudentData', data.student_data)
-    }
-      store.commit('saveUserData', data.user_data)
-      store.commit('saveBindingId', data.is_banding_student)
+// FastClick.attach(document.body)
+
+initIdentity()
+
+router.beforeEach( async (to,form,next) => {
+   let islogin = await localforage.getItem('isLogin')
+   store.commit('isLogin', true)
+  if (to.name === 'login' && islogin) {
+    next('/activitylist')
   } else {
-    console.log(err)
+    next()
   }
 })
-
-localforage.getItem('applyInfo',(err,value) => {
-  if (!err && value) {
-    store.commit('saveApplyInfo',value)
-  }
+router.beforeEach( async (to,form,next) => {
+  let islogin = await localforage.getItem('isLogin')
+ if (to.name !== 'login' && !islogin) {
+  next('/login')
+ } else {
+  next()
+ }
 })
-
-// router.beforeEach((to, from, next) => {
-//   localforage.getItem('userInfo', (err, value) => {
-//     if (!err && value) {
-//       if (to.name != 'login' && !value.user_data) {
-//         next('/login')
-//         return false;
-//       } 
-//       if (to.name == 'login' && value.user_data) {
-//         next('/activitylist')
-//         return false;
-//       } 
-//     } else {
-//       next()
-//     }
-//   })
-// })
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

@@ -1,8 +1,8 @@
 export default {
+  exam_name: '',
+  student_id: '',
+  exam_subject_id: '',
   student_data: null,
-  is_banding_student: '',
-  user_data: {},
-  applyInfo: [],
-  exam_id: '',
-  exam_name: ''
+  islogin: false,
+  user_id: ''
 }

@@ -43,12 +43,12 @@ export default {
       }
     }
   },
-  created () {
-    if (this.userData) {
-      this.$router.push('/activitylist');
-      return
-    }
-  },
+  // created () {
+  //   if (this.$store.state.islogin) {
+  //     this.$router.push('/activitylist');
+  //     return
+  //   }
+  // },
   computed: {
     userData() {
       return this.$store.state.user_data
@@ -69,8 +69,7 @@ export default {
         phone: this.postData.phone,
         name: this.postData.name
       }
-      getVerifyCode(data)
-        .then(res => {
+      getVerifyCode(data).then(res => {
           if (res.data.error_code == 0) {
             this.isSendVerify = true
             this.timer = setInterval(() => {
@@ -83,7 +82,7 @@ export default {
               }
             }, 800)
           } else {
-            MessageBox(res.data.message)
+            MessageBox('提示',res.data.message)
           }
         })
         .catch(err => {
@@ -116,16 +115,17 @@ export default {
             return false;
           };
           if (code.charAt(0) == 0) {
-            const data = res.data.data
-            this.is_bind_student = data.is_banding_student
-            if (data.student_data) {
-              this.$store.commit('saveStudentData', data.student_data)
-            } else {
-              this.$store.commit('saveStudentData', null)
+            const data = res.data.data;
+            this.$store.commit('isLogin', true);
+             this.$store.commit('saveUserId', data.user_data.user_id)
+            localforage.setItem('user_id', data.user_data.user_id);
+            localforage.setItem('isLogin', true);
+            this.is_bind_student = data.is_banding_student;
+            if (data.student_data && data.student_data.student_id) {
+              this.$store.commit('saveStudentId', data.student_data.student_id)
+              localforage.setItem('student_id', data.student_data.student_id);
             }
-            this.$store.commit('saveUserData', data.user_data)
-            this.$store.commit('saveBindingId', data.is_banding_student)
-            localforage.setItem('userInfo', data, err => console.log(err))
+            
             Toast({
               message: '登录成功',
               duration: 1800

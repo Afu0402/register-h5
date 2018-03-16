@@ -10,12 +10,6 @@
         <button class="intro__button" @click="toApply">{{buttonText}}</button>
       </div>
     </div>
-    <!-- 
-    <h3 class="intro__title">{{details.name}}</h3>
-    <p class="intro__content">
-          {{details.test_instructions}}
-    </p> -->
-    <!-- <button class="intro__button" @click="toApply">{{buttonText}}</button> -->
   </div>
 </template>
 <script>
@@ -39,19 +33,16 @@ export default {
   components: {
     formSelect
   },
-  mounted() {
-    let studentId = 0;
-    if (this.student) {
-      studentId = this.student.student_id;
+  created() {
+    if (!this.exam_subject_id) {
+      this.$router.push('/activitylist');
     }
-    if (this.exam_subject_id) {
-      const data = {
-        exam_subject_id: this.exam_subject_id,
-        student_id: studentId
+    const data = {
+        exam_subject_id:  this.exam_subject_id,
+        student_id: this.student_id
       };
       getExamSubjectDetail(data).then(res => {
           const code = res.data.error_code;
-          console.log(res.data.data)
           if (code.charAt(0) == 3) {
             MessageBox("提示", res.data.message);
             return false;
@@ -63,16 +54,17 @@ export default {
           if (code.charAt(0) == 0) {
             this.details = res.data.data;
           }
-        })
-        .catch(err => console.log(err));
-    }
+        }).catch(err => console.log(err));
   },
   computed: {
     exam_subject_id() {
-      return this.$store.state.exam_id;
+      return this.$route.query.exam_id;
     },
-    student() {
-      return this.$store.state.student_data;
+    student_id () {
+      return this.$route.query.student_id;
+    },
+    islogin() {
+      return this.$store.state.islogin;
     },
     buttonText() {
       if (this.details.is_apply) {
@@ -100,20 +92,14 @@ export default {
           MessageBox("提示", "报名已截止")
           return false;
         }
-      if (!this.userData.user_id) {
+      if (!this.islogin) {
         MessageBox("提示", "您还未登录请先登录").then(() =>
           this.$router.push("/login")
         );
         return;
       }
       if (this.details.is_apply != 0) {
-        this.$router.push({
-          name: "result",
-          params: {
-            student_id: this.student.student_id,
-            exam_subject_id: this.exam_subject_id
-          }
-        });
+        this.$router.push(`/result?student_id=${this.student_id}&exam_id=${this.exam_subject_id}&name=${this.details.name}`);
       } else {
         this.$router.push("/apply");
       }

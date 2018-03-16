@@ -9,7 +9,6 @@
       <template v-if="selectList">
         <li v-for="(item,index) in selectList" :key="index" :class="{'form-select__active': value === item[akey]}" @click.stop="selected(item)">
           {{item[akey]}}
-          <span style="color: red;" v-if="item.residue">(还剩{{item.residue}}个名额)</span>
         </li>
       </template>
     </ul>
@@ -58,9 +57,6 @@ export default {
   },
   created() {
     document.addEventListener('click', (e) => {
-      console.log(e.target)
-      console.log(this.$el)
-      console.log(this.$el.contains(e.target))
        if (!this.$el.contains(e.target)) this.selectSwitch = false
    })
   },

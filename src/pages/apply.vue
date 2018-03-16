@@ -83,7 +83,6 @@
     <p class="warm-prompt"><span>温馨提示：</span>"请您认真审核个人信息，提交后无将无法修改。如有问题请咨询客服QQ:2182412785"</p>
     </div>
     <button class="apply__button" @click="sumbit">提交报名</button>
-
     <mt-datetime-picker @touchmove.native.prevent style="position:fixed;"  ref="picker" @confirm="handleConfirm" :startDate="new Date(1985)" v-model="pickerVisible" type="date" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
     </mt-datetime-picker>
     <popup @clickShadow="closeSelect" :open="popupSwitch">
@@ -112,6 +111,7 @@ import localforage from "@/localforage/localforage";
 export default {
   data() {
     return {
+      applyData: {},
       first_will: "",
       second_will: "",
       county: "鼓楼区",
@@ -259,15 +259,14 @@ export default {
     popup
   },
   created() {
+    if (!this.exam_name) {
+      MessageBox('提示', '网络错误').then(() => this.$router.push('/activitylist'))
+    }
     this.fatchSchoolData();
     getApplyFlitterInfo({ exam_subject_id: this.exam_id }).then(res => {
       if (res.data.error_code == 0) {
-        console.log(res.data.data);
         this.imgSrc = res.data.data.detail_image_url;
-        this.$store.commit("saveApplyInfo", res.data.data);
-        localforage.setItem("applyInfo", res.data.data, err =>
-          console.log(err)
-        );
+        this.applyData = res.data.data
       }
     });
     if (this.studentInfo) {
@@ -288,20 +287,17 @@ export default {
       }
       return "";
     },
-    userData() {
-      return this.$store.state.user_data;
+    user_id() {
+      return this.$store.state.user_id;
     },
     studentInfo() {
       return this.$store.state.student_data;
-    },
-    applyData() {
-      return this.$store.state.applyInfo;
     },
     exam_name() {
       return this.$store.state.exam_name;
     },
     exam_id() {
-      return this.$store.state.exam_id;
+      return this.$store.state.exam_subject_id;
     }
   },
   watch: {
@@ -310,6 +306,7 @@ export default {
       this.end = false;
       this.schools = [];
       this.page = 1;
+      this.$refs.infinite.value = ''
       this.bottomPullText = "上拉刷新";
       this.fatchSchoolData();
     }
@@ -328,6 +325,7 @@ export default {
       this.schoolName = item.name;
       this.$refs.infinite.value = item.name;
       this.studentData.school_id = item.school_id;
+      this.schoolName = '';
       this.popupSwitch = false;
     },
     openPicker() {
@@ -455,20 +453,19 @@ export default {
         MessageBox("提示", "该考点名额已满请选择其他考点");
         return false;
       }
-      this.studentData.user_id = this.userData.user_id;
+      this.studentData.user_id = this.user_id;
       this.studentData.family_data.push(this.fatherData, this.motherData);
       Indicator.open({
         text: "报名中...",
         spinnerType: "fading-circle"
       });
-      addStudentData(this.studentData)
-        .then(res => {
+      addStudentData(this.studentData).then(res => {
           let errCode = res.data.error_code;
           if (errCode == 0) {
             const studentdata = res.data.data;
-            console.log(res.data.data);
+            this.$store.commit('saveStudentId',studentdata.student_id)
             this.$store.commit("saveStudentData", studentdata);
-            localforage.setItem("userInfo", studentdata, err =>
+            localforage.setItem("student_id", studentdata.student_id, err =>
               console.log(err)
             );
             let data = {
@@ -478,11 +475,10 @@ export default {
             };
             addStudentApply(data)
               .then(res => {
-                console.log("12");
                 Indicator.close();
                 let code = res.data.error_code;
                 if (code.charAt(0) == 0) {
-                  this.$router.push("/result");
+                  this.$router.push(`/result?student_id=${studentdata.student_id}&exam_id=${this.exam_id}&name=${this.exam_name}`);
                   return false;
                 }
                 if (code.charAt(0) == 3) {
@@ -490,7 +486,6 @@ export default {
                   return false;
                 }
                 if (code.charAt(0) == 1) {
-                  console.log("报名错误");
                   MessageBox("提示", "网络错误");
                   return false;
                 }
@@ -549,7 +544,7 @@ export default {
         .then(res => {
           Indicator.close();
           if (res.data.error_code == 0) {
-            this.$router.push("/result");
+            this.$router.push(`/result?student_id=${this.studentInfo.student_id}&exam_id=${this.exam_id}&name=${this.exam_name}`);
           } else {
             MessageBox("提示", res.data.message);
           }

@@ -5,8 +5,9 @@
 </template>
 
 <script>
+import localforage from '@/localforage/localforage'
 export default {
-  name: 'App'
+  name: 'App',
 }
 </script>
 

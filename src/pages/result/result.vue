@@ -1,13 +1,12 @@
 <template>
   <div class="result">
-    <p class="common-title header-fixed">
+    <p class="common-title">
       <span>小鹿活动</span>
       <span class="back-icon" @click="goblack">返回</span>
     </p>
     <div class="resutl__main">
-      <!-- <h3 class="result__title">《{{exam_name}}》</h3> -->
-      <div class="result__wrap">
-
+      <div class="result_background">
+        <div class="result__wrap">
         <div class="result__succeed">
           <div class="result-log"></div>
           <div class="result-title">
@@ -17,7 +16,7 @@
         </div>
         <div class="result__middle">
           <div class="result__init" :class="{'lineheight': resultDetails.templates == 1}">
-            <span class="result-hint__title" v-if="resultDetails.templates == 1"> 审核中...</span>
+            <p class="result-hint__title" v-if="resultDetails.templates == 1"> 审核中...</p>
             <p class="result-hint__text">
               {{ resultDetails.templates == 1 ? '请您于3月27日下午2:00后登录系统查询' : '请下载准考证自行打印'}}
               </p>
@@ -39,16 +38,7 @@
             <span>{{resultDetails.total}}</span>
           </div>
         </div>
-        <!-- <div class="result__grade" v-if="resultDetails.templates == 5">
-          <div class="result__content">
-            <p class="result__final">终审通过</p>
-          </div>
-          <div class="result__pass">
-            <span>你的综合素养测评结果为：</span>
-            <button class="result__tag" v-if="resultDetails.templates == 3">通过</button>
-            <button class="result__tag result__tage--red" v-if="resultDetails.templates == 4">不通过</button>
-          </div>
-        </div> -->
+      </div>
       </div>
     </div>
   </div>
@@ -68,13 +58,12 @@ export default {
     };
   },
   created() {
-    if (this.exam_subject_id && this.studentData) {
+    if (this.exam_subject_id && this.student_id) {
       const data = {
-        student_id: this.studentData.student_id,
+        student_id: this.student_id,
         exam_subject_id: this.exam_subject_id
       };
-      getStudentApply(data)
-        .then(res => {
+      getStudentApply(data).then(res => {
           const code = res.data.error_code;
           if (code.charAt(0) == 3) {
             MessageBox("提示", res.data.message);
@@ -85,22 +74,22 @@ export default {
             return;
           }
           if (code == 0) {
-            console.log(res.data.data);
             this.resultDetails = res.data.data;
           }
         })
-        .catch(err => console.log(err));
+        .catch(err => (err));
     }
   },
   computed: {
     exam_subject_id() {
-      return this.$store.state.exam_id;
+      return this.$route.query.exam_id;
     },
-    studentData() {
-      return this.$store.state.student_data;
+    student_id () {
+      return this.$route.query.student_id;
     },
     exam_name() {
-      return this.$store.state.exam_name;
+      return this.$route.query.name;
+      
     }
   },
   methods: {
@@ -112,10 +101,9 @@ export default {
         return false;
       }
       updateStudentExamPerformancePrint({
-        student_exam_performance_id: this.resultDetails
-          .student_exam_performance_id
+        student_exam_performance_id: this.resultDetails.student_exam_performance_id
       });
-      window.open("http://dev-jsl-apply-api.thedeer.cn:88/test");
+      window.open(this.resultDetails.admission_ticket_url);
     }
   },
   beforeRouteLeave(to, from, next) {
@@ -131,9 +119,6 @@ export default {
 <style>
 .result {
   height: 100%;
-  box-sizing: border-box;
-  padding:40px 15px 15px 15px;
-  overflow: auto;
   background: #f4f5f5;
 }
 .header-fixed{
@@ -142,6 +127,7 @@ export default {
   left: 0;
   right: 0;
 }
+
 /* .result hr {
   height: 2px;
   border: none;
@@ -155,12 +141,19 @@ export default {
 
 .result__init {
   text-align: center;
-  line-height: 26px;
+  line-height: 24px;
 }
 .lineheight {
   line-height: 36px;
 }
 .resutl__main {
+  box-sizing: border-box;
+  padding:15px;
+  overflow: auto;
+  background: #f4f5f5;
+  height: calc(100% - 35px);
+}
+.result_background {
   box-sizing: border-box;
   padding: 18px;
   background: #ffffff;
@@ -170,6 +163,7 @@ export default {
   background: url("./img/result-bg.png") no-repeat;
   background-position: cover;
   background-size: 100%;
+
 }
 .result__wrap {
   padding: 12px;

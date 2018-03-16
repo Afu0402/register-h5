@@ -34,17 +34,7 @@ export default {
     };
   },
   created() {
-    let studentId = 0;
-    if (!this.userData) {
-      this.$router.push('/login');
-      return
-    }
-    if (this.student_data) {
-      studentId = this.student_data.student_id;
-    }
-    getExamSubjectList({ student_id: studentId })
-      .then(res => {
-        console.log(res.data);
+    getExamSubjectList({ student_id: this.student_id }).then(res => {
         const code = res.data.error_code;
         if (code.charAt(0) == 3) {
           MessageBox("提示", res.data.message);
@@ -63,30 +53,30 @@ export default {
       });
   },
   computed: {
-    userData() {
-      return this.$store.state.user_data;
+    student_id() {
+      return this.$store.state.student_id ? this.$store.state.student_id : 0;
     },
-    student_data() {
-      return this.$store.state.student_data;
+    islogin () {
+      return this.$store.state.islogin
     }
   },
   methods: {
     toIntro(item) {
       if (item.exam_status == 1) {
-        this.$router.push("/intro");
-        this.$store.commit("setCurrentExamId", item.exam_subject_id);
-        this.$store.commit("currentExamName", item.name);
+        this.$router.push(`/intro?student_id=${this.student_id}&exam_id=${item.exam_subject_id}`);
+        this.$store.commit("setCurrentExamSubjectId", item.exam_subject_id);
+        this.$store.commit("setCurrentExamSubjectName", item.name);
       }
     },
     sginOut() {
-      this.$router.push("/login");
       this.$store.commit("clearStoreAndLocal");
+      this.$router.push("/login");
     },
     searchAndApply(item) {
       const status = item.exam_status;
       const isApply = item.is_apply;
-      this.$store.commit("currentExamName", item.name);
-      this.$store.commit("setCurrentExamId", item.exam_subject_id);
+      this.$store.commit("setCurrentExamSubjectId", item.exam_subject_id);
+      this.$store.commit("setCurrentExamSubjectName", item.name);
       if (status == 0 && isApply == 0) {
         MessageBox("提示", "考试已结束");
         return false;
@@ -95,32 +85,17 @@ export default {
         MessageBox("提示", "报名已截止");
         return false;
       }
-      if (!this.userData.user_id) {
+      if (!this.islogin) {
         MessageBox("提示", "您还未登录请先登录").then(() =>
           this.$router.push("/login")
         );
         return;
       }
-      if (isApply == 0) {
-        getApplyFlitterInfo({ exam_subject_id: item.exam_subject_id }).then(res => {
-            if (res.data.error_code == 0) {
-              console.log(res.data.data);
-              this.$store.commit("saveApplyInfo", res.data.data);
-              localforage.setItem("applyInfo", res.data.data, err =>
-                console.log(err)
-              );
-            }
-          }
-        );
+      if (isApply == 0){
         this.$router.push("/apply");
         return;
       }
-      this.$router.push({
-        name: "result",
-        params: {
-          exam_subject_id: item.exam_subject_id
-        }
-      });
+      this.$router.push(`/result?student_id=${this.student_id}&exam_id=${item.exam_subject_id}&name=${item.name}`);
     },
     applyStatus(item) {
       const status = item.exam_status;
@@ -153,7 +128,7 @@ export default {
 <style>
 .activity-list {
   height: 100%;
-  background: #F4F5F5;
+  background: #f4f5f5;
 }
 .activity-warp {
   box-sizing: border-box;
@@ -171,9 +146,12 @@ export default {
 }
 .out-icon {
   position: absolute;
-  right: 10px;
-  top:0;
+   display: inline-block;
+    width: 40px;
+  right: 0;
+  top: 0;
   font-size: 12px;
+  cursor: pointer;
 }
 
 .activity-item {
