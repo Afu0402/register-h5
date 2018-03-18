@@ -95,7 +95,7 @@ export default {
         this.$router.push("/apply");
         return;
       }
-      this.$router.push(`/result?student_id=${this.student_id}&exam_id=${item.exam_subject_id}&name=${item.name}`);
+      this.$router.push('/result');
     },
     applyStatus(item) {
       const status = item.exam_status;

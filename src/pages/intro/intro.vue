@@ -99,7 +99,7 @@ export default {
         return;
       }
       if (this.details.is_apply != 0) {
-        this.$router.push(`/result?student_id=${this.student_id}&exam_id=${this.exam_subject_id}&name=${this.details.name}`);
+        this.$router.push('/result');
       } else {
         this.$router.push("/apply");
       }

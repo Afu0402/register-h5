@@ -540,8 +540,7 @@ export default {
         text: "报名中...",
         spinnerType: "fading-circle"
       });
-      addStudentApply(data)
-        .then(res => {
+      addStudentApply(data).then(res => {
           Indicator.close();
           if (res.data.error_code == 0) {
             this.$router.push(`/result?student_id=${this.studentInfo.student_id}&exam_id=${this.exam_id}&name=${this.exam_name}`);

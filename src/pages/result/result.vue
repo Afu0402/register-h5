@@ -75,20 +75,24 @@ export default {
           }
           if (code == 0) {
             this.resultDetails = res.data.data;
+            console.log(this.resultDetails)
+            
           }
         })
         .catch(err => (err));
+    } else {
+      this.$router.push('/activitylist')
     }
   },
   computed: {
     exam_subject_id() {
-      return this.$route.query.exam_id;
+      return this.$store.state.exam_subject_id;
     },
     student_id () {
-      return this.$route.query.student_id;
+      return this.$store.state.student_id;
     },
     exam_name() {
-      return this.$route.query.name;
+      return this.$store.state.exam_name;
       
     }
   },
