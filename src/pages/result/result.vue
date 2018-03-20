@@ -11,14 +11,14 @@
           <div class="result-log"></div>
           <div class="result-title">
               <p class="result-title__one">{{exam_name}}</p>
-              <p class="result-title__two">报名成功</p>
+              <p class="result-title__two">报名信息提交成功</p>
           </div>
         </div>
         <div class="result__middle">
           <div class="result__init" :class="{'lineheight': resultDetails.templates == 1}">
             <p class="result-hint__title" v-if="resultDetails.templates == 1"> 审核中...</p>
             <p class="result-hint__text">
-              {{ resultDetails.templates == 1 ? '请您于3月27日下午2:00后登录系统查询' : '请下载准考证自行打印'}}
+              {{ resultDetails.templates == 1 ? '请您于3月28日2:00后登录下载准考证' : '请下载准考证自行打印'}}
               </p>
           </div>
           <div class="result__voucher" :class="{'result__voucher--no': resultDetails.templates < 2}">
