@@ -17,19 +17,22 @@
         <div class="result__middle">
           <div class="result__init" :class="{'lineheight': resultDetails.templates == 1}">
             <p class="result-hint__title" v-if="resultDetails.templates == 1"> 审核中...</p>
-            <p class="result-hint__text">
-              {{ resultDetails.templates == 1 ? '请您于3月28日2:00后登录下载准考证' : '请下载准考证自行打印'}}
+            <p class="result-hint__text" v-if="resultDetails.templates != 5">
+              {{ resultDetails.templates == 1 ? '请您于3月28日18:00后登录下载准考证' : '请下载准考证自行打印'}}
               </p>
           </div>
           <div class="result__voucher" :class="{'result__voucher--no': resultDetails.templates < 2}">
-            <img v-if="resultDetails.templates >= 2" :src="resultDetails.admission_ticket_thumbnail_url" @click="openVerify" alt="">
+            <div class="result__notpass--status" v-if="resultDetails.templates == 5">
+              <p>准考证审核未通过<br/>详情请咨询客服</p>
+            </div>
+            <img v-if="resultDetails.templates >= 2 && resultDetails.templates < 5" :src="resultDetails.admission_ticket_thumbnail_url" @click="openVerify" alt="">
             <img v-else src="./img/zhunkaoz.png" alt="">
           </div>
-          <button class="button"  v-if="resultDetails.templates >= 2" @click="openVerify">
-            <span class="save-icon"></span>保存准考证到相册
+          <button class="button"  v-if="resultDetails.templates >= 2 && resultDetails.templates < 5" @click="openVerify">
+            <span class="save-icon"></span>保存准考证并打印
           </button>
           </div>
-        <div class="result__grade" v-if="resultDetails.templates > 2 ">
+        <div class="result__grade" v-if="resultDetails.templates > 2 && resultDetails.templates < 5">
         <div class="result__pass">
             <span>你的综合素养测评结果为：</span>
           </div>
@@ -107,11 +110,12 @@ export default {
       updateStudentExamPerformancePrint({
         student_exam_performance_id: this.resultDetails.student_exam_performance_id
       });
-      window.open(this.resultDetails.admission_ticket_url);
+      this.$router.push(`/ticket?url=${this.resultDetails.admission_ticket_url}`);
     }
   },
   beforeRouteLeave(to, from, next) {
-    if (to.name === "activitylist") {
+    console.log(to)
+    if (to.name === "activitylist" || to.name === 'ticket') {
       next();
     } else {
       next({ path: "/activitylist" });
@@ -293,4 +297,19 @@ export default {
   background-size: 100%;
   background-position: cover;
 }
+.result__notpass--status {
+  position: absolute;
+  top:0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.671);
+  z-index: 1;
+  vertical-align: middle;
+}
+.result__notpass--status>p {
+  margin-top: 25%;
+  font-size: 18px !important;
+  }
 </style>

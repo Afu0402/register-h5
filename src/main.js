@@ -9,16 +9,13 @@ import store from './store'
 import { DatetimePicker, InfiniteScroll,Loadmore,Indicator,Spinner } from 'mint-ui';
 import localforage from './localforage/localforage';
 import dataCrypt from './dataCrypt/dataCrypt';
-import FastClick from 'fastclick';
 import initIdentity from '@/init/init';
 import './assets/common.css' ;
-import 'mint-ui/lib/style.css';
 
 Vue.component(DatetimePicker.name, DatetimePicker); 
 Vue.component(Loadmore.name, Loadmore);
 Vue.component(Spinner.name, Spinner);
 Vue.use(InfiniteScroll);
-// FastClick.attach(document.body)
 
 initIdentity()
 
@@ -33,11 +30,11 @@ router.beforeEach( async (to,form,next) => {
 })
 router.beforeEach( async (to,form,next) => {
   let islogin = await localforage.getItem('isLogin')
- if (to.name !== 'login' && !islogin) {
-  next('/login')
- } else {
-  next()
- }
+  if (to.name !== 'login' && !islogin) {
+    next('/login')
+  } else {
+    next()
+  }
 })
 Vue.config.productionTip = false
 

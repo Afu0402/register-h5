@@ -86,6 +86,7 @@ export default {
           }
         })
         .catch(err => {
+          MessageBox('提示','网络异常')
           console.log(err)
         })
     },

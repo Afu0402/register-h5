@@ -123,7 +123,7 @@ export default {
   
 }
 .intro-img {
-  padding: 292.3% 0 0 0;
+  padding: 210% 0 0 0;
   position: relative;
 }
 .intro-img > img {

@@ -2,6 +2,7 @@ import store from "@/store/index";
 import localforage from "@/localforage/localforage";
 import { getStudentDetail } from "@/api/apis"
 export default  function() {
+  const b = 1;
   localforage.getItem("isLogin", (err, value) => {
     if (!err && value) {
       store.commit("isLogin", true);

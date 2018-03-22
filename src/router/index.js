@@ -49,6 +49,11 @@ export default new Router({
       meta: {
         title: '小鹿活动'
       }
+    },
+    {
+      path: '/ticket',
+      name: 'ticket',
+      component: () => import ('@/pages/ticket.vue')
     }
   ]
 })

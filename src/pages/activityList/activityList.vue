@@ -12,7 +12,7 @@
         <div class="activity-content">
           <div>
             <p class="activity-content__title">{{item.name}}</p>
-            <p class="activity-content__time">{{item.exam_time}}</p>
+            <p class="activity-content__time">{{item.start_time}}</p>
           </div>
            <button class="activity-button" :class="buttonClass(item)" @click="searchAndApply(item)">{{applyStatus(item)}}</button>
         </div>
@@ -35,6 +35,7 @@ export default {
   },
   created() {
     getExamSubjectList({ student_id: this.student_id }).then(res => {
+      console.log(res.data.data)
         const code = res.data.error_code;
         if (code.charAt(0) == 3) {
           MessageBox("提示", res.data.message);

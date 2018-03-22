@@ -33,11 +33,11 @@
           <!-- <form-input v-model="studentData.id_card" :disabled="studentInfo" placeholder="身份证号码/护照号"></form-input> -->
           <!-- <form-input v-model="studentData.registered_permanent_residence" :disabled="studentInfo" placeholder="户籍所在地"></form-input> -->
           <!-- <form-input v-model="studentData.family_address" :disabled="studentInfo" placeholder="家庭地址"></form-input> -->
-          <div class="flex">
-            <form-select style="width: 48%" v-if="applyData" :disabled="studentInfo" :selectList="classrommData" v-model="studentData.classroom" akey="name"  aval="name" limit :schoolName="studentData.classroom" label="班级"></form-select>
-            <form-select style="width: 48%" v-if="applyData" :disabled="studentInfo" :selectList="dutyData" v-model="studentData.duty" akey="name" aval="name" :schoolName="studentData.duty" limit label="职务"></form-select>
+          <!-- <div class="flex"> -->
+            <form-select v-if="applyData" :disabled="studentInfo" :selectList="classrommData" v-model="studentData.classroom" akey="name"  aval="name" limit :schoolName="studentData.classroom" label="班级"></form-select>
+            <!-- <form-select style="width: 48%" v-if="applyData" :disabled="studentInfo" :selectList="dutyData" v-model="studentData.duty" akey="name" aval="name" :schoolName="studentData.duty" limit label="职务"></form-select> -->
 
-          </div>
+          <!-- </div> -->
           <!-- <form-select v-model="studentData.first_will" :disabled="studentInfo" :selectList="wills" akey="name" aval="name" :schoolName="first_will" label="第一志愿"></form-select>
           <form-select v-model="studentData.second_will" :disabled="studentInfo" :selectList="second_wills" akey="name" aval="name" :schoolName="second_will" label="第二志愿"></form-select>
           <form-area  v-model="studentData.individual_resume" :disabled="studentInfo" placeholder="个人简介"></form-area>
@@ -80,7 +80,7 @@
             <form-select style="margin: 0;" v-if="applyData" :selectList="applyData.exam_position_data" v-model="exam_position_id" akey="name" aval="eaxm_position_id" label="考点选择"></form-select>
           </div>
         </div>
-    <p class="warm-prompt"><span>温馨提示：</span>"请您认真审核个人信息，提交后无将无法修改。如有问题请咨询客服QQ:2182412785"</p>
+    <p class="warm-prompt"><span>温馨提示：</span>"请您认真审核个人信息，提交后将无法修改。如有问题请咨询客服QQ:2182412785"</p>
     </div>
     <button class="apply__button" @click="sumbit">提交报名</button>
     <mt-datetime-picker @touchmove.native.prevent style="position:fixed;"  ref="picker" @confirm="handleConfirm" :startDate="new Date(1985)" v-model="pickerVisible" type="date" year-format="{value} 年" month-format="{value} 月" date-format="{value} 日">
@@ -89,7 +89,7 @@
         <ul class="infinite-select" v-infinite-scroll="fatchSchoolData" :infinite-scroll-disabled="end" infinite-scroll-distance="10">
           <li :class="{'selected-li': schoolName == item.name}" v-for="(item,index) in schools" @click="selectSchool(item)" :key="index">{{item.name}}</li>
           <mt-spinner v-if="!end" type="snake"></mt-spinner>
-          <li v-else style="color: #ccc;">没有更多了</li>
+          <li v-else style="color: #ccc;">没有更多了 </li>
         </ul>
     </popup>
   </div>
@@ -356,10 +356,10 @@ export default {
         MessageBox("提示", "选择学生信息-性别");
         return;
       }
-      if (!this.studentData.duty) {
-        MessageBox("提示", "请输入学生信息-职务)");
-        return;
-      }
+      // if (!this.studentData.duty) {
+      //   MessageBox("提示", "请输入学生信息-职务)");
+      //   return;
+      // }
       // if (!this.studentData.id_card || !card.test(this.studentData.id_card)) {
       //   MessageBox("提示", "请输入学生信息-身份证(规格18位)");
       //   return;
@@ -454,7 +454,9 @@ export default {
         return false;
       }
       this.studentData.user_id = this.user_id;
-      this.studentData.family_data.push(this.fatherData, this.motherData);
+      if (!this.studentData.family_data || this.studentData.family_data.length != 2) {
+        this.studentData.family_data.push(this.fatherData, this.motherData);
+      }
       Indicator.open({
         text: "报名中...",
         spinnerType: "fading-circle"
