@@ -454,7 +454,7 @@ export default {
         return false;
       }
       this.studentData.user_id = this.user_id;
-      if (!this.studentData.family_data || this.studentData.family_data.length != 2) {
+      if (!this.studentData.family_data && this.studentData.family_data.length != 2) {
         this.studentData.family_data.push(this.fatherData, this.motherData);
       }
       Indicator.open({

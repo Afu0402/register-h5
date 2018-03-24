@@ -23,7 +23,7 @@
           </div>
           <div class="result__voucher" :class="{'result__voucher--no': resultDetails.templates < 2}">
             <div class="result__notpass--status" v-if="resultDetails.templates == 5">
-              <p>准考证审核未通过<br/>详情请咨询客服</p>
+              <p>{{resultDetails.student_name}}<br/>报名资格审核未通过<br/>详情请咨询客服</p>
             </div>
             <img v-if="resultDetails.templates >= 2 && resultDetails.templates < 5" :src="resultDetails.admission_ticket_thumbnail_url" @click="openVerify" alt="">
             <img v-else src="./img/zhunkaoz.png" alt="">
@@ -114,7 +114,6 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    console.log(to)
     if (to.name === "activitylist" || to.name === 'ticket') {
       next();
     } else {
@@ -309,7 +308,8 @@ export default {
   vertical-align: middle;
 }
 .result__notpass--status>p {
-  margin-top: 25%;
-  font-size: 18px !important;
+  margin-top: 18%;
+  font-size: 16px !important;
+  line-height: 36px;
   }
 </style>
