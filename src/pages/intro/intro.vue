@@ -7,7 +7,7 @@
     <div class="intro-wrap">
       <div class="intro-img">
         <img :src="details.detail_image_url" alt="">
-        <button class="intro__button" @click="toApply">{{buttonText}}</button>
+        <button class="intro__button" :class="{'exam-end': status == 3}" @click="toApply">{{buttonText}}</button>
       </div>
     </div>
   </div>
@@ -157,5 +157,8 @@ export default {
   border-radius: 30px;
   margin: auto;
   font-size: 16px;
+}
+.exam-end {
+  background: rgb(160, 160, 160);
 }
 </style>

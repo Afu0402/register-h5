@@ -14,7 +14,7 @@
             <p class="activity-content__title">{{item.name}}</p>
             <p class="activity-content__time">{{item.start_time}}</p>
           </div>
-           <button class="activity-button" :class="buttonClass(item)" @click="searchAndApply(item)">{{applyStatus(item)}}</button>
+           <button class="activity-button"  :class="buttonClass(item)" @click="searchAndApply(item)">{{applyStatus(item)}}</button>
         </div>
     </div>
     </div>
@@ -118,7 +118,7 @@ export default {
     buttonClass(item) {
       const status = item.exam_status;
       const isApply = item.is_apply;
-      if (status == 0 && isApply == 0) {
+      if (status == 3 || status == 0 && isApply == 0) {
         return "exam-end";
       }
     }
